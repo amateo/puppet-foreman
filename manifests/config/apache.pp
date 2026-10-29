@@ -290,6 +290,10 @@ class foreman::config::apache(
       recurse => true,
     }
 
+    $_ssl_certs_dir = $ssl_certs_dir ? {
+      ''      => undef,
+      default => $ssl_certs_dir,
+    }
     apache::vhost { 'foreman-ssl':
       add_default_charset   => 'UTF-8',
       docroot               => $docroot,
@@ -301,7 +305,7 @@ class foreman::config::apache(
       serveraliases         => $serveraliases,
       ssl                   => true,
       ssl_cert              => $ssl_cert,
-      ssl_certs_dir         => $ssl_certs_dir,
+      ssl_certs_dir         => $_ssl_certs_dir,
       ssl_key               => $ssl_key,
       ssl_chain             => $ssl_chain,
       ssl_ca                => $ssl_ca,
@@ -310,7 +314,7 @@ class foreman::config::apache(
       ssl_protocol          => $ssl_protocol,
       ssl_verify_client     => $ssl_verify_client,
       ssl_options           => '+StdEnvVars +ExportCertData',
-      ssl_verify_depth      => '3',
+      ssl_verify_depth      => 3,
       access_log_format     => $access_log_format,
       additional_includes   => ["${::apache::confd_dir}/${priority}-foreman-ssl.d/*.conf"],
       use_optional_includes => true,
